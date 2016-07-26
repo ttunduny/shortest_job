@@ -47,7 +47,7 @@
 
 			</table>
 
-			<input type="submit" name="submit" value="Submit">
+			<input type="submit" id="submit" name="submit" value="Submit">
 		</form>
 	</div>
 	<div id="job_listing">
@@ -89,7 +89,7 @@
 		background-color: #ffffff;
 	}
 	#results_gantt{
-		width: 55%;
+		width: 35%;
 		float: left;
 		height: 250px;
 		border: 1px ridge;
@@ -98,7 +98,7 @@
 		background-color: #e3e3e3;
 	}
 	#results_stats{
-		width: 40%;
+		width: 60%;
 		float: left;
 		height: 250px;
 		border: 1px ridge;
@@ -119,6 +119,13 @@
 </style>
 <script type="text/javascript">
 	$(document).ready( function () {
+
+		function hide_Submit(){
+			$("#submit").hide();
+		}
+		function show_Submit(){
+			$("#submit").show();
+		}
 		var t = $('#table_id').DataTable();
 	    var counter = 1;	 
 	    $('#addRow').on( 'click', function () {
@@ -136,8 +143,30 @@
 	    	t.row( $(this).parents('tr') ).remove().draw();
 	    	
 		} );
+		$('#table_id tbody').on( 'keyup', '.arrival', function (e) {
+			var val = $(this).closest("tr").find(".arrival").val();
+			if(val<0){				
+				$(this).closest("tr").find(".arrival").css('background-color','red');
+				hide_Submit();
+			}else{
+				$(this).closest("tr").find(".arrival").css('background-color','white');
+				show_Submit();
+			}
+		});
+
+		$('#table_id tbody').on( 'keyup', '.time', function (e) {
+			var val = $(this).closest("tr").find(".time").val();
+			if(val<=0){				
+				$(this).closest("tr").find(".time").css('background-color','red');
+				hide_Submit();
+			}else{
+				$(this).closest("tr").find(".time").css('background-color','white');
+				show_Submit();
+			}
+		});
 	    $('#jobs_form').on('submit', function (e) {
           e.preventDefault();
+
           $.ajax({
             type: 'post',
             url: 'compute.php',

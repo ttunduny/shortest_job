@@ -68,6 +68,7 @@
 	    }
 	    $count++;	    
 	}
+	$min = $arrival_times[0];
 	$chart = "<div id=\"gannt\">";
 	$chart .= "<script>$('#gannt').highcharts({
         chart: {
@@ -80,7 +81,7 @@
             categories: ['Processes']
         },
         yAxis: {
-            min: 0,
+            min: ".$min.",
             title: {
                 text: 'Burst Times'
             }
@@ -99,6 +100,7 @@
 	$chart.="</script></div>";    
 
 	$results = array('chart'=>$chart,'average_wt'=>$avgwt,'avg_tat'=>$avgtat);
+	
     print_r($results);
 
 ?>
