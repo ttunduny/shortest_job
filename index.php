@@ -24,15 +24,17 @@
 	<div id="job_adds">
 		<form id="jobs_form" method="post" action="compute.php">
 			<br/><br/>
-			<input type="button" id="addRow" value="Add Row" />
+			<!-- <input type="button" id="addRow" value="Add Row" style="float:right;margin-right:2%" /> -->
+			<input type="hidden" id="count_rows" name="" value="1">
 			<br/><br/><br/>
-			<table id="table_id" class="display" width="80% !important">
+			<table id="table_id" class="display" style="width: 96%;border:1px ridge">
 				<thead>
 					<tr>
 						<th>Job Name</th>
 						<th>Arrival Time</th>
 						<th>Burst Time</th>
-						<th>Action</th>
+						<th>Add</th>
+						<th>Remove</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -40,6 +42,7 @@
 						<td><input type="text" name="process_name[]" class="process" required></td>
 						<td><input type="number" name="arrival_time[]" class="arrival" required></td>
 						<td><input type="number" name="time[]" class="burst" required></td>												
+						<td ><input size=25 type="button" class="add" value="Add Row"/></td>
 						<td ><input size=25 type="button" class="delete" value="Remove"/></td>
 					</tr>
 					
@@ -48,20 +51,20 @@
 			</table>
 			<br/>
 			<span id="errors"></span>
-			<input type="submit" id="submit" name="submit" value="Simulate">
+			<input type="submit" id="submit" name="submit" value="Simulate" style="margin-left:3%">
 		</form>
 	</div>
-	<div id="job_listing">
-	</div>
-
 	<div id="results_gantt">
 		<div id="gannt">
 		</div>
+		<div id="results_stats">
+			<h5>Average Waiting Time: <span id="avgwt"></span></h5>
+			<h5>Average Turn Aroung Time: <span id="avgtat"></span></h5>
+		</div>
 	</div>
-	<div id="results_stats">
-		<h5>Average Waiting Time: <span id="avgwt"></span></h5>
-		<h5>Average Turn Aroung Time: <span id="avgtat"></span></h5>
-	</div>
+	
+	
+	
 
 	
 	
@@ -72,46 +75,39 @@
 		background-color: #cccccc;
 	}
 	#job_adds{
-		width: 35%;
+		width: 45%;
 		float: left;
-		height: 450px;
+		height: 550px;
 		border: 1px ridge;
 		margin: 2px;
 		margin-top: 3%;
+		margin-left: 3%;
+		overflow: scroll;
 		background-color: #ffffff;
 	}
-	#job_listing{
-		width: 60%;
-		float: left;
-		height: 450px;
-		border: 1px ridge;
-		margin: 2px;
-		margin-top: 3%;
-		background-color: #ffffff;
-	}
+	
 	#results_gantt{
-		width: 35%;
+		width: 50%;
 		float: left;
 		height: 250px;
 		border: 1px ridge;
-		margin: 2px;
-		margin-top: 1%;
+		margin-top: 3%;		
 		background-color: #e3e3e3;
 	}
 	#results_stats{
-		width: 60%;
-		float: left;
+		width: 100%;
+		background-color: #ffffff;
 		height: 250px;
 		border: 1px ridge;
-		margin: 2px;
-		margin-top: 1%;
-		background-color: #ffffff;
+		margin-top: -1%;
+		float: left;
 		padding: 2%;
+		margin: 1px;
 	}
 	#gannt{
 		width: 100%;
 		float: left;
-		height: 250px;
+		height: 290px;
 		border: 1px ridge;
 		margin: 2px;		
 		background-color: #ffffff;
@@ -131,20 +127,32 @@
 		        "bPaginate": false,
 		        "bFilter": false,
 		        "bInfo": false } );
-	    var counter = 1;	 
-	    $('#addRow').on( 'click', function () {
+	    var counter = 1;	
+	    $('#table_id tbody').on( 'click', '.add', function () { 
+	    // $('.add').on( 'click', function () {
 	        t.row.add( [
 	        	'<input type="text" name="process_name[]" class="process">',
 	        	'<input type="text" name="arrival_time[]" class="arrival">',
 	        	'<input type="text" name="time[]" class="burst">',
+	        	'<input size=25 type="button" class="add" value="Add Row"/>',
 	        	'<input size=25 type="button" class="delete" value="Remove"/>',
 	        ] ).draw( false );
-	 
+	 		var count_rows = $("#count_rows").val();
+	    	count_rows = count_rows + 1;
+	    	$("#count_rows").val(count_rows);
 	        counter++;
 	    } );
 
-	    $('#table_id tbody').on( 'click', '.delete', function () {
-	    	t.row( $(this).parents('tr') ).remove().draw();
+	    $('#table_id tbody').on( 'click', '.delete', function () {	    	
+	    	var count_rows = $("#count_rows").val();
+	    	if(count_rows==1){
+	    		return false;
+	    	}else{
+	    		t.row( $(this).parents('tr') ).remove().draw();
+	    		count_rows = count_rows -1;
+	    		$("#count_rows").val(count_rows);
+	    	}
+	    	
 	    	
 		} );
 		$('#table_id tbody').on( 'keyup', '.arrival', function (e) {
@@ -172,17 +180,36 @@
 		});
 	    $('#jobs_form').on('submit', function (e) {
           e.preventDefault();
+          var count_rows = $("#count_rows").val();
+          if(count_rows<=0){
+          	$("#gannt").html("");
+          	$("#avgwt").html("");
+          	$("#avgtat").html("");
+          	return false;
+          }else{
+	          $.ajax({
+	            type: 'post',
+	            url: 'compute.php',
+	            data: $('#jobs_form').serialize(),
+	            success: function (msg) {              
+	              $("#gannt").html(msg);
 
-          $.ajax({
-            type: 'post',
-            url: 'compute.php',
-            data: $('#jobs_form').serialize(),
-            success: function (msg) {
-              console.log(msg);
-              $("#results_gantt").html(msg);
+	            }
+	          });
+	          $.ajax({
+	            type: 'post',
+	            url: 'compute2.php',
+	            data: $('#jobs_form').serialize(),
+	            success: function (a) {              
+	              var new_msg = JSON.parse(a);
+	              var awt  = new_msg.average_wt;
+	              var tat = new_msg.avg_tat;
+	              $("#avgwt").html(awt);
+	              $("#avgtat").html(tat);
 
-            }
-          });
+	            }
+	          });
+	      }
 
         });
         

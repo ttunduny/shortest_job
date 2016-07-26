@@ -25,6 +25,11 @@
 				$processes[$j] = $processes[$j+1];
 				$processes[$j+1] = $temp_proc;
 
+
+				$temp_waiting = $waiting_time[$j];
+				$waiting_time[$j] = $waiting_time[$j+1];
+				$waiting_time[$j+1] = $temp_waiting;
+				
 				$temp_arrival = $arrival_times[$j];
 				$arrival_times[$j] = $arrival_times[$j+1];
 				$arrival_times[$j+1] = $temp_arrival;
