@@ -23,29 +23,24 @@
 <div style="width:100%;height:800px;background-color:#e3e3e3;float:left">
 	<div id="job_adds">
 		<form id="jobs_form" method="post" action="compute.php">
+			<br/><br/>
+			<input type="button" id="addRow" value="Add Row" />
+			<br/><br/><br/>
 			<table id="table_id" class="display" width="80% !important">
 				<thead>
 					<tr>
 						<th>Job Name</th>
 						<th>Arrival Time</th>
 						<th>Burst Time</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td><input type="text" name="process_name[]"></td>
-						<td><input type="number" name="arrival_time[]"></td>
-						<td><input type="number" name="time[]"></td>						
-					</tr>
-					<tr>
-						<td><input type="text" name="process_name[]"></td>
-						<td><input type="number" name="arrival_time[]"></td>
-						<td><input type="number" name="time[]"></td>						
-					</tr>
-					<tr>
-						<td><input type="text" name="process_name[]"></td>
-						<td><input type="number" name="arrival_time[]"></td>
-						<td><input type="number" name="time[]"></td>						
+						<td><input type="text" name="process_name[]" class="process"></td>
+						<td><input type="number" name="arrival_time[]" class="arrival"></td>
+						<td><input type="number" name="time[]" class="burst"></td>												
+						<td ><input size=25 type="button" class="delete" value="Remove"/></td>
 					</tr>
 					
 				</tbody>
@@ -61,6 +56,10 @@
 	<div id="results_gantt">
 		<div id="gannt">
 		</div>
+	</div>
+	<div id="results_stats">
+		<h5>Average Waiting Time: <span id="avgwt"></span></h5>
+		<h5>Average Turn Aroung Time: <span id="avgtat"></span></h5>
 	</div>
 
 	
@@ -90,7 +89,7 @@
 		background-color: #ffffff;
 	}
 	#results_gantt{
-		width: 95%;
+		width: 55%;
 		float: left;
 		height: 250px;
 		border: 1px ridge;
@@ -98,8 +97,18 @@
 		margin-top: 1%;
 		background-color: #e3e3e3;
 	}
+	#results_stats{
+		width: 40%;
+		float: left;
+		height: 250px;
+		border: 1px ridge;
+		margin: 2px;
+		margin-top: 1%;
+		background-color: #ffffff;
+		padding: 2%;
+	}
 	#gannt{
-		width: 37%;
+		width: 100%;
 		float: left;
 		height: 250px;
 		border: 1px ridge;
@@ -110,7 +119,23 @@
 </style>
 <script type="text/javascript">
 	$(document).ready( function () {
-	    $('#table_id').DataTable();
+		var t = $('#table_id').DataTable();
+	    var counter = 1;	 
+	    $('#addRow').on( 'click', function () {
+	        t.row.add( [
+	        	'<input type="text" name="process_name[]" class="process">',
+	        	'<input type="text" name="arrival_time[]" class="arrival">',
+	        	'<input type="text" name="time[]" class="burst">',
+	        	'<input size=25 type="button" class="delete" value="Remove"/>',
+	        ] ).draw( false );
+	 
+	        counter++;
+	    } );
+
+	    $('#table_id tbody').on( 'click', '.delete', function () {
+	    	t.row( $(this).parents('tr') ).remove().draw();
+	    	
+		} );
 	    $('#jobs_form').on('submit', function (e) {
           e.preventDefault();
           $.ajax({
@@ -125,33 +150,14 @@
           });
 
         });
+        
+
 	});
 	
-/*	$('#gannt').highcharts({
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'Stacked bar chart'
-        },
-        xAxis: {
-            categories: ['Processes']
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Burst Times'
-            }
-        },
-        legend: {
-            reversed: true
-        },
-        plotOptions: {
-            series: {
-                stacking: 'normal'
-            }
-        },
-        series: [{name:'a',data:[5]},{name:'as',data:[3]},{name:'as',data:[2]}]  })*/
 </script>
+<script type="text/javascript">
+
+</script>
+
 
 </html>

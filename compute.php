@@ -37,6 +37,18 @@
     for($i=0;$i<count($turanaround_time);$i++){
         $total_time+=$turanaround_time[$i];
     }
+    $n = count($processes);
+    $total_tatime  = 0;
+    for($i=0;$i<count($turanaround_time);$i++){
+        $total_tatime+=$turanaround_time[$i];
+    }
+    $total_waiting_time  = 0;
+    for($i=0;$i<count($waiting_time);$i++){
+        $total_waiting_time+=$waiting_time[$i];
+    }
+
+    $avgwt = $total_waiting_time/$n;
+    $avgtat = $total_tatime/$n;
 
 	for ($i=0; $i < $count; $i++) { 
 		$message = "Process: ".$processes[$i]." Burst Time:".$burst_times[$i]." Waiting Time :".$waiting_time[$i]." TAT: ".$turanaround_time[$i];
@@ -85,6 +97,8 @@
 		$chart.=$series;		
 	$chart .="]  })";
 	$chart.="</script></div>";    
-    echo $chart;
+
+	$results = array('chart'=>$chart,'average_wt'=>$avgwt,'avg_tat'=>$avgtat);
+    print_r($results);
 
 ?>
