@@ -37,17 +37,18 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td><input type="text" name="process_name[]" class="process"></td>
-						<td><input type="number" name="arrival_time[]" class="arrival"></td>
-						<td><input type="number" name="time[]" class="burst"></td>												
+						<td><input type="text" name="process_name[]" class="process" required></td>
+						<td><input type="number" name="arrival_time[]" class="arrival" required></td>
+						<td><input type="number" name="time[]" class="burst" required></td>												
 						<td ><input size=25 type="button" class="delete" value="Remove"/></td>
 					</tr>
 					
 				</tbody>
 
 			</table>
-
-			<input type="submit" id="submit" name="submit" value="Submit">
+			<br/>
+			<span id="errors"></span>
+			<input type="submit" id="submit" name="submit" value="Simulate">
 		</form>
 	</div>
 	<div id="job_listing">
@@ -119,14 +120,17 @@
 </style>
 <script type="text/javascript">
 	$(document).ready( function () {
-
+		$("#errors").html('');
 		function hide_Submit(){
 			$("#submit").hide();
 		}
 		function show_Submit(){
 			$("#submit").show();
 		}
-		var t = $('#table_id').DataTable();
+		var t = $('#table_id').DataTable( {
+		        "bPaginate": false,
+		        "bFilter": false,
+		        "bInfo": false } );
 	    var counter = 1;	 
 	    $('#addRow').on( 'click', function () {
 	        t.row.add( [
@@ -147,9 +151,10 @@
 			var val = $(this).closest("tr").find(".arrival").val();
 			if(val<0){				
 				$(this).closest("tr").find(".arrival").css('background-color','red');
+				$("#errors").html('The Arrival Time Cannot be less than 0');
 				hide_Submit();
 			}else{
-				$(this).closest("tr").find(".arrival").css('background-color','white');
+				$(this).closest("tr").find(".arrival").css('background-color','white');				
 				show_Submit();
 			}
 		});
@@ -158,6 +163,7 @@
 			var val = $(this).closest("tr").find(".time").val();
 			if(val<=0){				
 				$(this).closest("tr").find(".time").css('background-color','red');
+				$("#errors").html('The Burst Time Cannot be less than 1');
 				hide_Submit();
 			}else{
 				$(this).closest("tr").find(".time").css('background-color','white');

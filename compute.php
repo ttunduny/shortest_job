@@ -12,6 +12,8 @@
 	}
 	$temp = null;
 	$temp_proc = null;
+	$smallest_arrival = 1000000;
+
 	for ($i=0; $i <$count ; $i++) { 
 		for ($j=0; $j <$count -1 ; $j++) { 
 			if($burst_times[$j]>$burst_times[$j+1]){
@@ -22,6 +24,10 @@
 				$temp_proc = $processes[$j];
 				$processes[$j] = $processes[$j+1];
 				$processes[$j+1] = $temp_proc;
+
+				$temp_arrival = $arrival_times[$j];
+				$arrival_times[$j] = $arrival_times[$j+1];
+				$arrival_times[$j+1] = $temp_arrival;
 
 				
 			}
@@ -55,12 +61,19 @@
 		// echo "$message<br/>";
 	}
 
+	$min = 1000000;
+	for ($i=0; $i < count($arrival_times); $i++) { 
+		if($arrival_times[$i]<$min){
+			$min = $arrival_times[$i];
+		}
+	}
 	$processes = array_reverse($processes);
 	$burst_times = array_reverse($burst_times);			
 	
 	$series = "";
 	$count = 0;
 	for ($i=0; $i < count($processes); $i++) { 
+		$burst_time = $min + $burst_times[$i];
 		if($count==0){
 	    	$series.="{name:'".$processes[$i]."',data:[".$burst_times[$i]."]}";
 	    }else{
@@ -68,7 +81,7 @@
 	    }
 	    $count++;	    
 	}
-	$min = $arrival_times[0];
+	
 	$chart = "<div id=\"gannt\">";
 	$chart .= "<script>$('#gannt').highcharts({
         chart: {
@@ -100,7 +113,7 @@
 	$chart.="</script></div>";    
 
 	$results = array('chart'=>$chart,'average_wt'=>$avgwt,'avg_tat'=>$avgtat);
-	
-    print_r($results);
+
+    echo $chart;
 
 ?>
