@@ -15,14 +15,15 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
-  
+  	<script type="text/javascript" src="highcharts.js"></script>
 	<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
+
 </head>
 <body>
 <div style="width:100%;height:800px;background-color:#e3e3e3;float:left">
 	<div id="job_adds">
 		<form id="jobs_form" method="post" action="compute.php">
-			<table id="table_id" class="display" border="1px" style="width:90%">
+			<table id="table_id" class="display" width="80% !important">
 				<thead>
 					<tr>
 						<th>Job Name</th>
@@ -33,29 +34,20 @@
 				<tbody>
 					<tr>
 						<td><input type="text" name="process_name[]"></td>
-						<td><input type="text" name="arrival_time[]"></td>
-						<td><input type="text" name="time[]"></td>						
+						<td><input type="number" name="arrival_time[]"></td>
+						<td><input type="number" name="time[]"></td>						
 					</tr>
 					<tr>
 						<td><input type="text" name="process_name[]"></td>
-						<td><input type="text" name="arrival_time[]"></td>
-						<td><input type="text" name="time[]"></td>						
+						<td><input type="number" name="arrival_time[]"></td>
+						<td><input type="number" name="time[]"></td>						
 					</tr>
 					<tr>
 						<td><input type="text" name="process_name[]"></td>
-						<td><input type="text" name="arrival_time[]"></td>
-						<td><input type="text" name="time[]"></td>						
+						<td><input type="number" name="arrival_time[]"></td>
+						<td><input type="number" name="time[]"></td>						
 					</tr>
-					<tr>
-						<td><input type="text" name="process_name[]"></td>
-						<td><input type="text" name="arrival_time[]"></td>
-						<td><input type="text" name="time[]"></td>						
-					</tr>
-					<tr>
-						<td><input type="text" name="process_name[]"></td>
-						<td><input type="text" name="arrival_time[]"></td>
-						<td><input type="text" name="time[]"></td>						
-					</tr>
+					
 				</tbody>
 
 			</table>
@@ -66,13 +58,21 @@
 	<div id="job_listing">
 	</div>
 
+	<div id="results_gantt">
+		<div id="gannt">
+		</div>
+	</div>
+
 	
 	
 </div>
 </body>
 <style type="text/css">
+	body{
+		background-color: #cccccc;
+	}
 	#job_adds{
-		width: 30%;
+		width: 35%;
 		float: left;
 		height: 450px;
 		border: 1px ridge;
@@ -81,7 +81,7 @@
 		background-color: #ffffff;
 	}
 	#job_listing{
-		width: 68%;
+		width: 60%;
 		float: left;
 		height: 450px;
 		border: 1px ridge;
@@ -89,11 +89,69 @@
 		margin-top: 3%;
 		background-color: #ffffff;
 	}
+	#results_gantt{
+		width: 95%;
+		float: left;
+		height: 250px;
+		border: 1px ridge;
+		margin: 2px;
+		margin-top: 1%;
+		background-color: #e3e3e3;
+	}
+	#gannt{
+		width: 37%;
+		float: left;
+		height: 250px;
+		border: 1px ridge;
+		margin: 2px;		
+		background-color: #ffffff;
+	}
+
 </style>
 <script type="text/javascript">
 	$(document).ready( function () {
 	    $('#table_id').DataTable();
+	    $('#jobs_form').on('submit', function (e) {
+          e.preventDefault();
+          $.ajax({
+            type: 'post',
+            url: 'compute.php',
+            data: $('#jobs_form').serialize(),
+            success: function (msg) {
+              console.log(msg);
+              $("#results_gantt").html(msg);
+
+            }
+          });
+
+        });
 	});
+	
+/*	$('#gannt').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Stacked bar chart'
+        },
+        xAxis: {
+            categories: ['Processes']
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Burst Times'
+            }
+        },
+        legend: {
+            reversed: true
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        },
+        series: [{name:'a',data:[5]},{name:'as',data:[3]},{name:'as',data:[2]}]  })*/
 </script>
 
 </html>

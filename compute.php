@@ -1,12 +1,3 @@
-<html>
-<head>
-	<title>Processor</title>
-
-
-<script type="text/javascript" src="jquery.min.js"></script>
-<script type="text/javascript" src="highcharts.js"></script>
-<body>
-<div id="container"></div>
 <?php
 	$processes = $_POST['process_name'];
 	$arrival_times = $_POST['arrival_time'];
@@ -49,7 +40,7 @@
 
 	for ($i=0; $i < $count; $i++) { 
 		$message = "Process: ".$processes[$i]." Burst Time:".$burst_times[$i]." Waiting Time :".$waiting_time[$i]." TAT: ".$turanaround_time[$i];
-		echo "$message<br/>";
+		// echo "$message<br/>";
 	}
 
 	$processes = array_reverse($processes);
@@ -63,23 +54,15 @@
 	    }else{
 	    	$series.=",{name:'".$processes[$i]."',data:[".$burst_times[$i]."]}";	    	
 	    }
-	    $count++;
+	    $count++;	    
 	}
-
-	echo "$series";;
-	
-
-?>
-<script type="text/javascript">
-
-$(function() {
- console.log(<?php echo $series; ?>);
-   $('#container').highcharts({
+	$chart = "<div id=\"gannt\">";
+	$chart .= "<script>$('#gannt').highcharts({
         chart: {
             type: 'bar'
         },
         title: {
-            text: 'Stacked bar chart'
+            text: 'Processes Gantt'
         },
         xAxis: {
             categories: ['Processes']
@@ -98,12 +81,10 @@ $(function() {
                 stacking: 'normal'
             }
         },
-        series: [<?php echo $series; ?>]
-    });
+        series: [";        
+		$chart.=$series;		
+	$chart .="]  })";
+	$chart.="</script></div>";    
+    echo $chart;
 
-     
-});
-</script>
-
-</body>
-</html>
+?>
